@@ -1,0 +1,21 @@
+# dependências
+node_modules/
+
+# builds
+dist/
+coverage/
+
+# env
+.env
+.env.*.local
+!.env.example   # mantém arquivo de exemplo
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

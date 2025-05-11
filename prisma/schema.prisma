@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Administrador {
+  fk_usuario_id_usr                                 Int
+  fk_usuario_id_usr_                                Int
+  Usuario_Administrador_fk_usuario_id_usrToUsuario  Usuario @relation("Administrador_fk_usuario_id_usrToUsuario", fields: [fk_usuario_id_usr], references: [id_usr], onDelete: Cascade, map: "FK_Administrador_1")
+  Usuario_Administrador_fk_usuario_id_usr_ToUsuario Usuario @relation("Administrador_fk_usuario_id_usr_ToUsuario", fields: [fk_usuario_id_usr_], references: [id_usr], onDelete: Cascade, map: "FK_Administrador_2")
+
+  @@id([fk_usuario_id_usr, fk_usuario_id_usr_])
+  @@index([fk_usuario_id_usr], map: "idx_admin_user")
+  @@index([fk_usuario_id_usr_], map: "idx_admin_user_managed")
+}
+
+model Jogo {
+  id_jogo                       Int          @id @default(autoincrement())
+  data_hora                     DateTime?    @db.DateTime(0)
+  nome_jogo                     String?      @db.VarChar(100)
+  nome_time_a                   String?      @db.VarChar(100)
+  nome_time_b                   String?      @db.VarChar(100)
+  fk_placar_id_placar           Int?
+  fk_tabela_time_id_tabela_time Int?
+  Placar                        Placar?      @relation(fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Jogo_2")
+  Tabela_Time                   Tabela_Time? @relation(fields: [fk_tabela_time_id_tabela_time], references: [id_tabela_time], map: "FK_Jogo_3")
+  Sumula                        Sumula[]
+
+  @@index([fk_placar_id_placar], map: "idx_jogo_fk_placar")
+  @@index([fk_tabela_time_id_tabela_time], map: "idx_jogo_fk_tabela_time")
+}
+
+model Placar {
+  id_placar      Int       @id @default(autoincrement())
+  pontos_time_a  Int?      @db.SmallInt
+  pontos_time_b  Int?      @db.SmallInt
+  set_faltas_a   Int?      @db.SmallInt
+  set_faltas_b   Int?      @db.SmallInt
+  periodo        Int?      @db.TinyInt
+  pedido_tempo_a Int?      @db.TinyInt
+  pedido_tempo_b Int?      @db.TinyInt
+  Jogo           Jogo[]
+  Usuario        Usuario[]
+}
+
+model Sumula {
+  id_sumula         Int       @id @default(autoincrement())
+  texto             String?   @db.Text
+  data_hora         DateTime? @db.DateTime(0)
+  fk_usuario_id_usr Int?
+  fk_jogo_id_jogo   Int?
+  Usuario           Usuario?  @relation(fields: [fk_usuario_id_usr], references: [id_usr], onDelete: Cascade, map: "FK_Sumula_2")
+  Jogo              Jogo?     @relation(fields: [fk_jogo_id_jogo], references: [id_jogo], onDelete: Cascade, map: "FK_Sumula_3")
+
+  @@index([fk_jogo_id_jogo], map: "idx_sumula_fk_jogo")
+  @@index([fk_usuario_id_usr], map: "idx_sumula_fk_usuario")
+}
+
+model Tabela {
+  id_tabela         Int           @id @default(autoincrement())
+  nome_tabela       String?       @db.VarChar(50)
+  fk_usuario_id_usr Int?
+  Usuario           Usuario?      @relation(fields: [fk_usuario_id_usr], references: [id_usr], onDelete: Cascade, map: "FK_Tabela_2")
+  Tabela_Time       Tabela_Time[]
+
+  @@index([fk_usuario_id_usr], map: "idx_tabela_fk_usuario")
+}
+
+model Tabela_Time {
+  id_tabela_time      Int     @id @default(autoincrement())
+  vitorias            Int?    @db.SmallInt
+  empates             Int?    @db.SmallInt
+  derrotas            Int?    @db.SmallInt
+  pontos              Int?    @db.SmallInt
+  saldo_gols          Int?    @db.SmallInt
+  fk_tabela_id_tabela Int?
+  Jogo                Jogo[]
+  Tabela              Tabela? @relation(fields: [fk_tabela_id_tabela], references: [id_tabela], onDelete: Cascade, map: "FK_Tabela_Time_2")
+
+  @@index([fk_tabela_id_tabela], map: "idx_tabela_time_fk_tabela")
+}
+
+model Usuario {
+  id_usr                                                  Int             @id @default(autoincrement())
+  username                                                String?         @unique(map: "username") @db.VarChar(50)
+  matricula                                               String?         @db.VarChar(20)
+  email                                                   String?         @db.VarChar(255)
+  telefone                                                String?         @db.VarChar(20)
+  e_adm                                                   Boolean         @default(false)
+  fk_placar_id_placar                                     Int?
+  Administrador_Administrador_fk_usuario_id_usrToUsuario  Administrador[] @relation("Administrador_fk_usuario_id_usrToUsuario")
+  Administrador_Administrador_fk_usuario_id_usr_ToUsuario Administrador[] @relation("Administrador_fk_usuario_id_usr_ToUsuario")
+  Sumula                                                  Sumula[]
+  Tabela                                                  Tabela[]
+  Placar                                                  Placar?         @relation(fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Usuario_2")
+
+  @@index([fk_placar_id_placar], map: "idx_usuario_fk_placar")
+}
