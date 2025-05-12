@@ -86,12 +86,14 @@ model Tabela_Time {
 
 model Usuario {
   id_usr                                                  Int             @id @default(autoincrement())
-  username                                                String?         @unique(map: "username") @db.VarChar(50)
+  username                                                String          @unique(map: "username") @db.VarChar(50)
+  senha                                                   String?          @db.VarChar(100)
   matricula                                               String?         @db.VarChar(20)
   email                                                   String?         @db.VarChar(255)
   telefone                                                String?         @db.VarChar(20)
   e_adm                                                   Boolean         @default(false)
   fk_placar_id_placar                                     Int?
+
   Administrador_Administrador_fk_usuario_id_usrToUsuario  Administrador[] @relation("Administrador_fk_usuario_id_usrToUsuario")
   Administrador_Administrador_fk_usuario_id_usr_ToUsuario Administrador[] @relation("Administrador_fk_usuario_id_usr_ToUsuario")
   Sumula                                                  Sumula[]
@@ -100,3 +102,4 @@ model Usuario {
 
   @@index([fk_placar_id_placar], map: "idx_usuario_fk_placar")
 }
+
