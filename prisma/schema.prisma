@@ -100,6 +100,10 @@ model Usuario {
   Tabela                                                  Tabela[]
   Placar                                                  Placar?         @relation(fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Usuario_2")
 
-  @@index([fk_placar_id_placar], map: "idx_usuario_fk_placar")
+  createdById  Int?                                   
+  createdBy    Usuario? @relation("Hierarchy", fields: [createdById], references: [id_usr])
+  createdUsers Usuario[] @relation("Hierarchy")       
+
+  @@index([fk_placar_id_placar, createdById], map: "idx_usuario_fkplacar_createdby")
 }
 
