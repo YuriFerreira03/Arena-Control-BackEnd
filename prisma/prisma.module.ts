@@ -1,3 +1,5 @@
+// npx prisma db pull : atualizar banco de dados
+
 import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 

@@ -26,12 +26,15 @@ model Jogo {
   nome_time_b                   String?      @db.VarChar(100)
   fk_placar_id_placar           Int?
   fk_tabela_time_id_tabela_time Int?
+  usuarioId                     Int
   Placar                        Placar?      @relation(fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Jogo_2")
   Tabela_Time                   Tabela_Time? @relation(fields: [fk_tabela_time_id_tabela_time], references: [id_tabela_time], map: "FK_Jogo_3")
+  usuario                       Usuario      @relation(fields: [usuarioId], references: [id_usr], onUpdate: Restrict, map: "FK_Jogo_Usuario")
   Sumula                        Sumula[]
 
   @@index([fk_placar_id_placar], map: "idx_jogo_fk_placar")
   @@index([fk_tabela_time_id_tabela_time], map: "idx_jogo_fk_tabela_time")
+  @@index([usuarioId], map: "FK_Jogo_Usuario")
 }
 
 model Placar {
@@ -53,6 +56,35 @@ model Sumula {
   data_hora         DateTime? @db.DateTime(0)
   fk_usuario_id_usr Int?
   fk_jogo_id_jogo   Int?
+  esporte           String?   @db.VarChar(100)
+  competicao        String?   @db.VarChar(100)
+  categoria         String?   @db.VarChar(100)
+  local             String?   @db.VarChar(100)
+  cidade            String?   @db.VarChar(100)
+  equipe_a          String?   @db.VarChar(100)
+  equipe_b          String?   @db.VarChar(100)
+  arbitro           String?   @db.VarChar(100)
+  observacoes       String?   @db.Text
+  gols_1t_a         Int?
+  gols_1t_b         Int?
+  faltas_1t_a       Int?
+  faltas_1t_b       Int?
+  tempos_1t_a       Int?
+  tempos_1t_b       Int?
+  gols_2t_a         Int?
+  gols_2t_b         Int?
+  faltas_2t_a       Int?
+  faltas_2t_b       Int?
+  tempos_2t_a       Int?
+  tempos_2t_b       Int?
+  gols_prorrog_a    Int?
+  gols_prorrog_b    Int?
+  faltas_prorrog_a  Int?
+  faltas_prorrog_b  Int?
+  tempos_prorrog_a  Int?
+  tempos_prorrog_b  Int?
+  jogadores_a       Json?
+  jogadores_b       Json?
   Usuario           Usuario?  @relation(fields: [fk_usuario_id_usr], references: [id_usr], onDelete: Cascade, map: "FK_Sumula_2")
   Jogo              Jogo?     @relation(fields: [fk_jogo_id_jogo], references: [id_jogo], onDelete: Cascade, map: "FK_Sumula_3")
 
@@ -87,23 +119,23 @@ model Tabela_Time {
 model Usuario {
   id_usr                                                  Int             @id @default(autoincrement())
   username                                                String          @unique(map: "username") @db.VarChar(50)
-  senha                                                   String?          @db.VarChar(100)
   matricula                                               String?         @db.VarChar(20)
   email                                                   String?         @db.VarChar(255)
   telefone                                                String?         @db.VarChar(20)
   e_adm                                                   Boolean         @default(false)
   fk_placar_id_placar                                     Int?
-
+  senha                                                   String?         @db.VarChar(100)
+  createdById                                             Int?
   Administrador_Administrador_fk_usuario_id_usrToUsuario  Administrador[] @relation("Administrador_fk_usuario_id_usrToUsuario")
   Administrador_Administrador_fk_usuario_id_usr_ToUsuario Administrador[] @relation("Administrador_fk_usuario_id_usr_ToUsuario")
+  Jogo                                                    Jogo[]
   Sumula                                                  Sumula[]
   Tabela                                                  Tabela[]
   Placar                                                  Placar?         @relation(fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Usuario_2")
-
-  createdById  Int?                                   
-  createdBy    Usuario? @relation("Hierarchy", fields: [createdById], references: [id_usr])
-  createdUsers Usuario[] @relation("Hierarchy")       
+  createdBy                                               Usuario?        @relation("Hierarchy", fields: [createdById], references: [id_usr])
+  createdUsers                                            Usuario[]       @relation("Hierarchy")
 
   @@index([fk_placar_id_placar, createdById], map: "idx_usuario_fkplacar_createdby")
+  @@index([createdById], map: "Usuario_createdById_fkey")
+  @@index([fk_placar_id_placar], map: "idx_usuario_fk_placar")
 }
-

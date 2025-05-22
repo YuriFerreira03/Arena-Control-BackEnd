@@ -1,20 +1,38 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Middleware para corrigir charset errado (ex: "UTF-8" ou aspas)
+  // —–– Logger simples
   app.use((req, _res, next) => {
-    const ct = req.headers['content-type'];
-    if (ct) {
-      req.headers['content-type'] = ct.replace(
-        /charset="?UTF-8"?/i,
-        'charset=utf-8',
-      );
-    }
+    console.log(`[BACKEND] ${req.method} ${req.url}`);
     next();
   });
+
+  // —–– Pipes globais
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+
+  // —–– (Opcional) prefixo global
+  // app.setGlobalPrefix('api');
+
+  // —–– Swagger
+  const config = new DocumentBuilder()
+    .setTitle('ArenaControl API')
+    .setDescription('Documentação da API de Súmulas')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  // Se tiver prefixo global, use SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   app.enableCors();
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
