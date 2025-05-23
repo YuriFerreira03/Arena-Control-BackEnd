@@ -85,8 +85,8 @@ model Sumula {
   tempos_prorrog_b  Int?
   jogadores_a       Json?
   jogadores_b       Json?
-  Usuario           Usuario?  @relation(fields: [fk_usuario_id_usr], references: [id_usr], onDelete: Cascade, map: "FK_Sumula_2")
-  Jogo              Jogo?     @relation(fields: [fk_jogo_id_jogo], references: [id_jogo], onDelete: Cascade, map: "FK_Sumula_3")
+  Usuario           Usuario?  @relation(fields: [fk_usuario_id_usr], references: [id_usr], map: "FK_Sumula_2")
+  Jogo              Jogo?     @relation(fields: [fk_jogo_id_jogo], references: [id_jogo], map: "FK_Sumula_3")
 
   @@index([fk_jogo_id_jogo], map: "idx_sumula_fk_jogo")
   @@index([fk_usuario_id_usr], map: "idx_sumula_fk_usuario")

@@ -54,7 +54,7 @@ export class SumulaService {
         equipe_b: dto.equipeB,
         arbitro: dto.arbitro,
         observacoes: dto.observacoes,
-        fk_jogo_id_jogo: dto.fk_jogo_id_jogo,
+        fk_jogo_id_jogo: dto.fk_jogo_id_jogo ?? null,
 
         jogadores_a: dto.jogadoresA as unknown as Prisma.JsonArray,
         jogadores_b: dto.jogadoresB as unknown as Prisma.JsonArray,
