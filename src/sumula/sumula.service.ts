@@ -42,9 +42,10 @@ export class SumulaService {
   }
 
   /* ---------- CRUD ---------- */
-  async create(dto: CreateSumulaDto) {
+  async create(dto: CreateSumulaDto, userId: number) {
     return this.prisma.sumula.create({
       data: {
+        fk_usuario_id_usr: userId,
         esporte: dto.esporte,
         competicao: dto.competicao,
         categoria: dto.categoria,
@@ -55,7 +56,7 @@ export class SumulaService {
         arbitro: dto.arbitro,
         observacoes: dto.observacoes,
         fk_jogo_id_jogo: dto.fk_jogo_id_jogo ?? null,
-
+        data_hora: dto.data_hora ? new Date(dto.data_hora) : null,
         jogadores_a: dto.jogadoresA as unknown as Prisma.JsonArray,
         jogadores_b: dto.jogadoresB as unknown as Prisma.JsonArray,
         ...this.mapPeriodos(dto.periodos),
@@ -73,32 +74,49 @@ export class SumulaService {
     return this.prisma.sumula.findUnique({ where: { id_sumula: id } });
   }
 
+findByUser(userId: number) {
+  return this.prisma.sumula.findMany({
+    where: { fk_usuario_id_usr: userId },
+    include: { Jogo: true },
+  });
+}
+
+
   async update(id: number, dto: UpdateSumulaDto) {
-    return this.prisma.sumula.update({
-      where: { id_sumula: id },
-      data: {
-        esporte: dto.esporte,
-        competicao: dto.competicao,
-        categoria: dto.categoria,
-        local: dto.local,
-        cidade: dto.cidade,
-        equipe_a: dto.equipeA,
-        equipe_b: dto.equipeB,
-        arbitro: dto.arbitro,
-        observacoes: dto.observacoes,
-        fk_jogo_id_jogo: dto.fk_jogo_id_jogo,
+  console.log('Dados sendo gravados no update:', {
+    jogadores_a: dto.jogadoresA,
+    jogadores_b: dto.jogadoresB,
+    periodos: dto.periodos,
+    data_hora: dto.data_hora ?? null,
+  });
 
-        jogadores_a: dto.jogadoresA
-          ? (dto.jogadoresA as unknown as Prisma.JsonArray)
-          : undefined,
-        jogadores_b: dto.jogadoresB
-          ? (dto.jogadoresB as unknown as Prisma.JsonArray)
-          : undefined,
+  return this.prisma.sumula.update({
+    where: { id_sumula: id },
+    data: {
+      esporte: dto.esporte,
+      competicao: dto.competicao,
+      categoria: dto.categoria,
+      local: dto.local,
+      cidade: dto.cidade,
+      equipe_a: dto.equipeA,
+      equipe_b: dto.equipeB,
+      arbitro: dto.arbitro,
+      observacoes: dto.observacoes,
+      fk_jogo_id_jogo: dto.fk_jogo_id_jogo,
+      data_hora: dto.data_hora ?? null,
 
-        ...(dto.periodos?.length ? this.mapPeriodos(dto.periodos) : {}),
-      },
-    });
-  }
+      jogadores_a: dto.jogadoresA
+        ? (dto.jogadoresA as unknown as Prisma.JsonArray)
+        : undefined,
+      jogadores_b: dto.jogadoresB
+        ? (dto.jogadoresB as unknown as Prisma.JsonArray)
+        : undefined,
+
+      ...(dto.periodos?.length ? this.mapPeriodos(dto.periodos) : {}),
+    },
+  });
+}
+
 
   async remove(id: number) {
     await this.prisma.sumula.delete({ where: { id_sumula: id } });

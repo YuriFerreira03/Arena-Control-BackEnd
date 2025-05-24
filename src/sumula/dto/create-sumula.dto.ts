@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsOptional,IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class PeriodoDto {
@@ -14,9 +14,11 @@ export class PeriodoDto {
 export class JogadorDto {
   @ApiProperty() @IsString() numero!: string;
   @ApiProperty() @IsString() nome!: string;
-  @ApiProperty() amarelo!: boolean;
-  @ApiProperty() vermelho!: boolean;
+  @ApiProperty() @IsBoolean() amarelo!: boolean;
+  @ApiProperty() @IsBoolean() vermelho!: boolean;
 }
+
+
 
 export class CreateSumulaDto {
   @ApiProperty() @IsString() esporte!: string;
@@ -28,6 +30,10 @@ export class CreateSumulaDto {
   @ApiProperty() @IsString() equipeB!: string;
   @ApiProperty() @IsString() arbitro!: string;
 
+  @ApiProperty()
+  @IsOptional()
+  data_hora?: Date;
+  
   @ApiProperty({ type: [PeriodoDto] })
   @ValidateNested({ each: true }) @Type(() => PeriodoDto) @IsArray()
   periodos!: PeriodoDto[];
@@ -42,5 +48,5 @@ export class CreateSumulaDto {
 
   @ApiProperty() @IsOptional() @IsString() observacoes?: string;
 
-  @ApiProperty() @IsInt() fk_jogo_id_jogo!: number;
+  @ApiProperty() @IsInt() @IsOptional() fk_jogo_id_jogo!: number;
 }
