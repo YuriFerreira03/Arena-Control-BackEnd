@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsInt, IsOptional,IsBoolean, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsOptional,IsBoolean, Min, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class PeriodoDto {
@@ -14,7 +14,7 @@ export class PeriodoDto {
 export class JogadorDto {
   @ApiProperty() @IsString() numero!: string;
   @ApiProperty() @IsString() nome!: string;
-  @ApiProperty() @IsBoolean() amarelo!: boolean;
+  @ApiProperty() @IsNumber()  @Min(0) amarelo!: number;
   @ApiProperty() @IsBoolean() vermelho!: boolean;
 }
 
@@ -33,7 +33,7 @@ export class CreateSumulaDto {
   @ApiProperty()
   @IsOptional()
   data_hora?: Date;
-  
+
   @ApiProperty({ type: [PeriodoDto] })
   @ValidateNested({ each: true }) @Type(() => PeriodoDto) @IsArray()
   periodos!: PeriodoDto[];
