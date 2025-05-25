@@ -39,4 +39,10 @@ export class JogoController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.jogoService.remove(id);
   }
+
+  @Get('jogados/lista')
+findJogosJogados(@Req() req: Request) {
+  const userId = (req as any).user.id_usr;
+  return this.jogoService.findJogosJogados(userId);
+}
 }

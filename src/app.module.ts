@@ -8,6 +8,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JogoModule } from './jogo/jogo.module';
+import { PlacarModule } from './placar/placar.module';
+import { TabelaModule } from './tabela/tabela.module';
 import { SumulaModule } from './sumula/sumula.module';
 
 @Module({
@@ -18,6 +20,8 @@ import { SumulaModule } from './sumula/sumula.module';
     ConfigModule.forRoot({ isGlobal: true }),
     JogoModule,
     SumulaModule,
+    TabelaModule,
+    PlacarModule
   ],
   controllers: [AppController, HealthController],
   providers: [AppService, PrismaService],

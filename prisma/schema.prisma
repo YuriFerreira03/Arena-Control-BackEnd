@@ -19,35 +19,42 @@ model Administrador {
 }
 
 model Jogo {
-  id_jogo                       Int          @id @default(autoincrement())
-  data_hora                     DateTime?    @db.DateTime(0)
-  nome_jogo                     String?      @db.VarChar(100)
-  nome_time_a                   String?      @db.VarChar(100)
-  nome_time_b                   String?      @db.VarChar(100)
-  fk_placar_id_placar           Int?
-  fk_tabela_time_id_tabela_time Int?
-  usuarioId                     Int
-  Placar                        Placar?      @relation(fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Jogo_2")
-  Tabela_Time                   Tabela_Time? @relation(fields: [fk_tabela_time_id_tabela_time], references: [id_tabela_time], map: "FK_Jogo_3")
-  usuario                       Usuario      @relation(fields: [usuarioId], references: [id_usr], onUpdate: Restrict, map: "FK_Jogo_Usuario")
-  Sumula                        Sumula[]
+  id_jogo                                 Int          @id @default(autoincrement())
+  data_hora                               DateTime?    @db.DateTime(0)
+  nome_jogo                               String?      @db.VarChar(100)
+  nome_time_a                             String?      @db.VarChar(100)
+  nome_time_b                             String?      @db.VarChar(100)
+  fk_placar_id_placar                     Int?
+  fk_tabela_time_id_tabela_time           Int?
+  usuarioId                               Int
+  Placar_Jogo_fk_placar_id_placarToPlacar Placar?      @relation("Jogo_fk_placar_id_placarToPlacar", fields: [fk_placar_id_placar], references: [id_placar], onDelete: Cascade, map: "FK_Jogo_2")
+  Tabela_Time                             Tabela_Time? @relation(fields: [fk_tabela_time_id_tabela_time], references: [id_tabela_time], map: "FK_Jogo_3")
+  usuario                                 Usuario      @relation(fields: [usuarioId], references: [id_usr], onUpdate: Restrict, map: "FK_Jogo_Usuario")
+  placar                                  Placar[]
+  Sumula                                  Sumula[]
 
+  @@index([usuarioId], map: "FK_Jogo_Usuario")
   @@index([fk_placar_id_placar], map: "idx_jogo_fk_placar")
   @@index([fk_tabela_time_id_tabela_time], map: "idx_jogo_fk_tabela_time")
-  @@index([usuarioId], map: "FK_Jogo_Usuario")
 }
 
 model Placar {
-  id_placar      Int       @id @default(autoincrement())
-  pontos_time_a  Int?      @db.SmallInt
-  pontos_time_b  Int?      @db.SmallInt
-  set_faltas_a   Int?      @db.SmallInt
-  set_faltas_b   Int?      @db.SmallInt
-  periodo        Int?      @db.TinyInt
-  pedido_tempo_a Int?      @db.TinyInt
-  pedido_tempo_b Int?      @db.TinyInt
-  Jogo           Jogo[]
-  Usuario        Usuario[]
+  id_placar                             Int       @id @default(autoincrement())
+  pontos_time_a                         Int?      @db.SmallInt
+  pontos_time_b                         Int?      @db.SmallInt
+  set_faltas_a                          Int?      @db.SmallInt
+  set_faltas_b                          Int?      @db.SmallInt
+  periodo                               Int?      @db.TinyInt
+  pedido_tempo_a                        Int?      @db.TinyInt
+  pedido_tempo_b                        Int?      @db.TinyInt
+  jogo_id                               Int?
+  createdAt                             DateTime  @default(now()) @db.DateTime(0)
+  updatedAt                             DateTime  @default(now()) @updatedAt @db.DateTime(0)
+  Jogo_Jogo_fk_placar_id_placarToPlacar Jogo[]    @relation("Jogo_fk_placar_id_placarToPlacar")
+  jogo                                  Jogo?     @relation(fields: [jogo_id], references: [id_jogo], onUpdate: Restrict, map: "FK_Placar_Jogo")
+  Usuario                               Usuario[]
+
+  @@index([jogo_id], map: "FK_Placar_Jogo")
 }
 
 model Sumula {
@@ -110,9 +117,11 @@ model Tabela_Time {
   pontos              Int?    @db.SmallInt
   saldo_gols          Int?    @db.SmallInt
   fk_tabela_id_tabela Int?
+  team                String  @db.VarChar(100)
   Jogo                Jogo[]
   Tabela              Tabela? @relation(fields: [fk_tabela_id_tabela], references: [id_tabela], onDelete: Cascade, map: "FK_Tabela_Time_2")
 
+  @@unique([fk_tabela_id_tabela, team], name: "tabela_team", map: "tabela_team")
   @@index([fk_tabela_id_tabela], map: "idx_tabela_time_fk_tabela")
 }
 
@@ -135,7 +144,7 @@ model Usuario {
   createdBy                                               Usuario?        @relation("Hierarchy", fields: [createdById], references: [id_usr])
   createdUsers                                            Usuario[]       @relation("Hierarchy")
 
-  @@index([fk_placar_id_placar, createdById], map: "idx_usuario_fkplacar_createdby")
   @@index([createdById], map: "Usuario_createdById_fkey")
   @@index([fk_placar_id_placar], map: "idx_usuario_fk_placar")
+  @@index([fk_placar_id_placar, createdById], map: "idx_usuario_fkplacar_createdby")
 }

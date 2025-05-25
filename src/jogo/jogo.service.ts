@@ -59,4 +59,25 @@ export class JogoService {
       where: { id_jogo: id },
     });
   }
+
+  /* --------- READ JOGOS COM PLACAR ---------- */
+async findJogosJogados(userId: number) {
+  return this.prisma.jogo.findMany({
+    where: {
+      usuarioId: userId,
+      placar: {
+        some: {}, 
+      },
+    },
+    orderBy: { data_hora: 'desc' },
+    select: {
+      id_jogo:     true,
+      nome_jogo:   true,
+      nome_time_a: true,
+      nome_time_b: true,
+      data_hora:   true,
+      usuarioId:   true,
+    },
+  });
+}
 }
