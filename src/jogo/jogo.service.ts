@@ -60,24 +60,53 @@ export class JogoService {
     });
   }
 
-  /* --------- READ JOGOS COM PLACAR ---------- */
+/* --------- READ JOGOS COM PLACAR FINAL ---------- */
 async findJogosJogados(userId: number) {
-  return this.prisma.jogo.findMany({
+  // 1. Busca todos os placares, já ordenados do mais novo pro mais velho
+  const jogos = await this.prisma.jogo.findMany({
     where: {
       usuarioId: userId,
-      placar: {
-        some: {}, 
-      },
+      placar: { some: {} },
     },
     orderBy: { data_hora: 'desc' },
-    select: {
-      id_jogo:     true,
-      nome_jogo:   true,
-      nome_time_a: true,
-      nome_time_b: true,
-      data_hora:   true,
-      usuarioId:   true,
+    include: {
+      placar: {
+        orderBy: { createdAt: 'desc' }, 
+        // não precisa de `take` aqui porque vamos filtrar por período
+      },
     },
   });
+
+  // 2. Para cada jogo, mantém só o registro mais recente de cada período
+  return jogos.map((jogo) => {
+    const placaresUnicos = jogo.placar.filter((p, i, arr) =>
+      // pega o primeiro (que já é o mais novo) de cada período
+      arr.findIndex(x => x.periodo === p.periodo) === i
+    );
+
+    // 3. Soma apenas esses únicos
+    const totalPontosA = placaresUnicos.reduce(
+      (sum, p) => sum + (p.pontos_time_a ?? 0),
+      0
+    );
+    const totalPontosB = placaresUnicos.reduce(
+      (sum, p) => sum + (p.pontos_time_b ?? 0),
+      0
+    );
+
+    return {
+      id_jogo: jogo.id_jogo,
+      nome_jogo: jogo.nome_jogo,
+      nome_time_a: jogo.nome_time_a,
+      nome_time_b: jogo.nome_time_b,
+      data_hora: jogo.data_hora,
+      usuarioId: jogo.usuarioId,
+      resultado_final: {
+        pontos_time_a: totalPontosA,
+        pontos_time_b: totalPontosB,
+      },
+    };
+  });
 }
+
 }

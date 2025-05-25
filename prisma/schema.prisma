@@ -148,3 +148,12 @@ model Usuario {
   @@index([fk_placar_id_placar], map: "idx_usuario_fk_placar")
   @@index([fk_placar_id_placar, createdById], map: "idx_usuario_fkplacar_createdby")
 }
+
+model tabela_jogo {
+  id                  Int @id @default(autoincrement())
+  fk_tabela_id_tabela Int
+  fk_jogo_id_jogo     Int
+
+  @@unique([fk_tabela_id_tabela, fk_jogo_id_jogo], map: "unique_link")
+  @@index([fk_jogo_id_jogo], map: "fk_jogo_id_jogo")
+}
