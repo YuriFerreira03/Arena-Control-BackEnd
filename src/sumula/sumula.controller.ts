@@ -28,7 +28,7 @@ export class SumulaController {
 create(@Body() dto: CreateSumulaDto, @Req() req: any) {
   console.log('DTO RECEBIDO ===>', dto);
   console.log('USER ===>', req.user);
-  const userId = req.user.id; 
+  const userId = req.user.id_usr; 
   return this.sumulaService.create(dto, userId);
 }
 
@@ -40,7 +40,7 @@ create(@Body() dto: CreateSumulaDto, @Req() req: any) {
   @UseGuards(JwtAuthGuard)
   @Get('minhas')
   findMySumulas(@Req() req: any) {
-    const userId = req.user.id;
+    const userId = req.user.id_usr;
     return this.sumulaService.findByUser(userId);
   }
 
