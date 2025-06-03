@@ -6,6 +6,20 @@ import { CreateTabelaDto } from './dto/create-tabela.dto';
 export class TabelaService {
   constructor(private prisma: PrismaService) {}
 
+   async deletarTabela(id: number) {
+    const tabela = await this.prisma.tabela.findUnique({
+      where: { id_tabela: id },
+    });
+
+    if (!tabela) {
+      throw new NotFoundException('Tabela não encontrada');
+    }
+
+    return this.prisma.tabela.delete({
+      where: { id_tabela: id },
+    });
+  }
+
 async vincularJogo(tabelaId: number, gameId: number) {
   // 1) traga *todos* os placares
   const jogo = await this.prisma.jogo.findUnique({

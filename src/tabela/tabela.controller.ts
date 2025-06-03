@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Get,
   UseGuards,
+  Delete,
   Request,
 } from '@nestjs/common';
 import { TabelaService } from './tabela.service';
@@ -45,5 +46,10 @@ export class TabelaController {
     const userId = req.user.id_usr;     
     return this.tabelaService.listarPorUsuario(userId);
   }
+
+  @Delete(':id')
+async deletarTabela(@Param('id', ParseIntPipe) id: number) {
+  return this.tabelaService.deletarTabela(id);
+}
 
 }

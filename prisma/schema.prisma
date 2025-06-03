@@ -59,7 +59,6 @@ model Placar {
 
 model Sumula {
   id_sumula         Int       @id @default(autoincrement())
-  texto             String?   @db.Text
   data_hora         DateTime? @db.DateTime(0)
   fk_usuario_id_usr Int?
   fk_jogo_id_jogo   Int?
